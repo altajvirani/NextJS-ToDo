@@ -16,7 +16,7 @@ import { Task } from "@/app/types";
 import AddIcon from "@/app/assets/AddIcon.jsx";
 import EditIcon from "@/app/assets/EditIcon";
 import DeleteIcon from "@/app/assets/DeleteIcon";
-import TaskModal from "../TaskModal";
+import TaskModal from "./TaskModal";
 
 export default function ToDo() {
   interface Tab {
