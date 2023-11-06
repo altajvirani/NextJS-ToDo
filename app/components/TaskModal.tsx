@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Input,
@@ -18,6 +18,7 @@ interface TaskModalProps {
   isEdit: boolean;
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
   toBeEditedTask?: Task;
+  setToBeEditedTask: React.Dispatch<React.SetStateAction<any>>;
   editTask?: (task: Task) => void;
 }
 
@@ -29,19 +30,21 @@ const TaskModal: React.FC<TaskModalProps> = ({
   isEdit,
   setIsEdit,
   toBeEditedTask,
+  setToBeEditedTask,
   editTask,
 }) => {
+  useEffect(() => {
+    if (!isOpen) {
+      setIsEdit(false);
+      setToBeEditedTask(false);
+    }
+  }, [isOpen]);
+
   return (
     <Modal
       backdrop="blur"
       isOpen={isOpen}
-      onOpenChange={() => {
-        onOpenChange();
-        if (!isOpen) {
-          setIsEdit(false);
-          taskInputRef.current.value = "";
-        }
-      }}
+      onOpenChange={() => onOpenChange()}
       placement="top-center">
       <ModalContent>
         {(onClose) => (

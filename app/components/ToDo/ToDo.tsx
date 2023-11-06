@@ -56,7 +56,7 @@ export default function ToDo() {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
         if (task.id == beingEditedTask.id)
-          return { ...task, title: taskInputRef.toString() };
+          return { ...task, title: taskInputRef.current.value };
         return task;
       });
     });
@@ -109,9 +109,10 @@ export default function ToDo() {
 
   return (
     <Card
-      className="w-[25rem] h-[36rem] bg-slate-50 shadow-[0rem_0rem_4rem_-1.5rem_rgb(0,0,0,0.15)]"
+      className="w-[25rem] h-[36rem] bg-slate-50 border-1 border-slate-300 "
       shadow="none">
       <Tabs
+        onSelectionChange={(e) => console.log(e)}
         aria-label="Options"
         color="primary"
         variant="underlined"
@@ -148,7 +149,7 @@ export default function ToDo() {
             return (
               <Card
                 key={task.id}
-                className="flex flex-row items-center min-h-[4rem] shadow-[0rem_0rem_1rem_-0.4rem_rgb(0,0,0,0.25)]"
+                className="flex flex-row items-center min-h-[4rem] border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_1.8rem_-0.4rem_rgb(0,0,0,0.2)] hover:border-none"
                 shadow="none">
                 <Checkbox
                   lineThrough={task.status}
@@ -203,6 +204,7 @@ export default function ToDo() {
         isEdit={isEdit}
         setIsEdit={setIsEdit}
         toBeEditedTask={toBeEditedTask}
+        setToBeEditedTask={setToBeEditedTask}
         editTask={editTask}
       />
     </Card>
