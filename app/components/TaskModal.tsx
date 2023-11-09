@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Input,
@@ -7,14 +7,17 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Textarea,
 } from "@nextui-org/react";
 import { Task } from "../types";
 
 interface TaskModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
-  taskInputRef: React.RefObject<any>;
+  taskTitleRef: React.RefObject<any>;
+  taskDescRef: React.RefObject<any>;
   addTask: () => void;
+  addTaskBtnRef: React.RefObject<HTMLButtonElement>;
   isEdit: boolean;
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
   toBeEditedTask?: Task;
@@ -25,8 +28,10 @@ interface TaskModalProps {
 const TaskModal: React.FC<TaskModalProps> = ({
   isOpen,
   onOpenChange,
-  taskInputRef,
+  taskTitleRef,
+  taskDescRef,
   addTask,
+  addTaskBtnRef,
   isEdit,
   setIsEdit,
   toBeEditedTask,
@@ -36,7 +41,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   useEffect(() => {
     if (!isOpen) {
       setIsEdit(false);
-      setToBeEditedTask(false);
+      setToBeEditedTask(undefined);
     }
   }, [isOpen]);
 
@@ -45,7 +50,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       backdrop="blur"
       isOpen={isOpen}
       onOpenChange={() => onOpenChange()}
-      placement="top-center">
+      placement="center">
       <ModalContent>
         {(onClose) => (
           <>
@@ -55,22 +60,49 @@ const TaskModal: React.FC<TaskModalProps> = ({
             <ModalBody className="p-6">
               <Input
                 autoFocus
+                isRequired
+                variant="faded"
                 label="Task"
                 placeholder="Eg. Complete homework"
-                ref={taskInputRef}
+                ref={taskTitleRef}
+                maxLength={40}
                 defaultValue={isEdit ? toBeEditedTask!.title : ""}
+                onKeyDown={(e) => {
+                  const descTxtArea = taskDescRef.current;
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    descTxtArea.focus();
+                    descTxtArea.setSelectionRange(
+                      descTxtArea.value.length,
+                      descTxtArea.value.length
+                    );
+                  }
+                }}
+              />
+              <Textarea
+                variant="faded"
+                label="Description"
+                placeholder="Eg. Finish quadratic equations and mensuration assignments"
+                ref={taskDescRef}
+                maxLength={150}
+                defaultValue={isEdit ? toBeEditedTask!.description : ""}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") addTaskBtnRef.current?.click();
+                }}
               />
             </ModalBody>
             <ModalFooter className="p-0 mx-0 mb-6 mr-6">
               <Button
+                ref={addTaskBtnRef}
                 color="primary"
                 variant="shadow"
                 onPress={() => {
-                  if (taskInputRef.current.value != "") onClose();
+                  if (taskTitleRef.current.value != "") onClose();
                 }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.currentTarget.disabled = true;
                   if (isEdit) editTask!(toBeEditedTask!);
-                  else if (taskInputRef.current.value != "") addTask();
+                  else if (taskTitleRef.current.value != "") addTask();
                 }}>
                 Go
               </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -17,6 +17,7 @@ import AddIcon from "@/app/assets/AddIcon.jsx";
 import EditIcon from "@/app/assets/EditIcon";
 import DeleteIcon from "@/app/assets/DeleteIcon";
 import TaskModal from "./TaskModal";
+// const tailwindRandomColor = require("@videsk/tailwind-random-color");
 
 export default function ToDo() {
   interface Tab {
@@ -29,25 +30,64 @@ export default function ToDo() {
     { name: "Done", count: 0 },
   ]);
 
-  const taskInputRef: React.RefObject<any> = useRef();
+  const [activeTab, setActiveTab] = useState<boolean>(false);
+  const toggleTaskChbx = (e: React.Key) => {
+    setActiveTab(e == 0 ? false : true);
+  };
 
+  const taskTitleRef: React.RefObject<any> = useRef();
+  const taskDescRef: React.RefObject<any> = useRef();
   const initialTasks: Task[] = [];
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [toBeEditedTask, setToBeEditedTask] = useState<any>();
+
+  // const taskCardTheme = () => {
+  //   return (
+  //     new tailwindRandomColor({
+  //       colors: [
+  //         "slate",
+  //         "gray",
+  //         "zinc",
+  //         "neutral",
+  //         "stone",
+  //         "red",
+  //         "orange",
+  //         "amber",
+  //         "yellow",
+  //         "lime",
+  //         "green",
+  //         "emerald",
+  //         "teal",
+  //         "cyan",
+  //         "sky",
+  //         "blue",
+  //         "indigo",
+  //         "violet",
+  //         "purple",
+  //         "fuchsia",
+  //         "pink",
+  //         "rose",
+  //       ],
+  //       range: [2, 7],
+  //     }).pick() + " absolute w-2 h-full left-0"
+  //   );
+  // };
 
   const addTask = () => {
     let task: Task = {
       id: tasks.length + 1,
-      title: taskInputRef.current.value,
+      title: taskTitleRef.current.value,
+      description:
+        taskDescRef.current.value != "" ? taskDescRef.current.value : null,
       status: false,
     };
     setTasks((prevTasks) => [...prevTasks, task]);
 
     setTabs((tabs) => {
       return tabs.map((tab) => {
-        if (tab.name == "Remaining") return { ...tab, count: tab.count + 1 };
-        return tab;
+        return tab.name == "Remaining" ? { ...tab, count: tab.count + 1 } : tab;
       });
     });
   };
@@ -55,9 +95,9 @@ export default function ToDo() {
   const editTask = (beingEditedTask: Task) => {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
-        if (task.id == beingEditedTask.id)
-          return { ...task, title: taskInputRef.current.value };
-        return task;
+        return task.id == beingEditedTask.id
+          ? { ...task, title: taskTitleRef.current.value }
+          : task;
       });
     });
     setIsEdit(false);
@@ -69,50 +109,61 @@ export default function ToDo() {
     });
 
     setTabs((tabs) => {
-      if (taskStatus) {
-        return tabs.map((tab) => {
-          if (tab.name == "Done")
-            return { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 };
-          return tab;
-        });
-      } else {
-        return tabs.map((tab) => {
-          if (tab.name == "Remaining")
-            return { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 };
-          return tab;
-        });
-      }
+      return taskStatus
+        ? tabs.map((tab) => {
+            return tab.name == "Done"
+              ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
+              : tab;
+          })
+        : tabs.map((tab) => {
+            return tab.name == "Remaining"
+              ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
+              : tab;
+          });
     });
   };
 
   const updateTaskStatus = (isChecked: boolean, taskId: number) => {
     setTasks((tasks) => {
       return tasks.map((task) => {
-        if (task.id == taskId) return { ...task, status: isChecked };
-        return task;
+        return task.id == taskId ? { ...task, status: isChecked } : task;
       });
     });
 
     setTabs((tabs) => {
       return tabs.map((tab) => {
-        if (isChecked) {
-          if (tab.name == "Remaining") return { ...tab, count: tab.count - 1 };
-          return { ...tab, count: tab.count + 1 };
-        } else if (tab.name == "Remaining")
-          return { ...tab, count: tab.count + 1 };
-        return { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 };
+        return isChecked
+          ? tab.name == "Remaining"
+            ? { ...tab, count: tab.count - 1 }
+            : { ...tab, count: tab.count + 1 }
+          : tab.name == "Remaining"
+          ? { ...tab, count: tab.count + 1 }
+          : { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 };
       });
     });
   };
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const modalBtnRef = useRef<HTMLButtonElement>(null);
+  const addTaskBtnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleEnter = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && !isOpen) modalBtnRef.current!.click();
+    };
+
+    document.addEventListener("keydown", handleEnter);
+    return () => {
+      document.removeEventListener("keydown", handleEnter);
+    };
+  }, [isOpen, modalBtnRef]);
 
   return (
     <Card
-      className="w-[25rem] h-[36rem] bg-slate-50 border-1 border-slate-300 "
+      className="w-full sm:w-full md:w-[35rem] lg:w-[35rem] xl:w-[35rem] 2xl:w-[35rem] h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
       shadow="none">
       <Tabs
-        onSelectionChange={(e) => console.log(e)}
+        onSelectionChange={(e) => toggleTaskChbx(e)}
         aria-label="Options"
         color="primary"
         variant="underlined"
@@ -147,42 +198,64 @@ export default function ToDo() {
         <ScrollShadow className="w-full h-full flex flex-col gap-4 p-6">
           {tasks.map((task: Task) => {
             return (
-              <Card
-                key={task.id}
-                className="flex flex-row items-center min-h-[4rem] border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_1.8rem_-0.4rem_rgb(0,0,0,0.2)] hover:border-none"
-                shadow="none">
-                <Checkbox
-                  lineThrough={task.status}
-                  onChange={(e) => updateTaskStatus(e.target.checked, task.id)}
-                  color="success"
-                  className="p-6">
-                  {task.title}
-                </Checkbox>
-                <Button
-                  isIconOnly
-                  variant="flat"
-                  color="secondary"
-                  aria-label="Edit task"
-                  size="sm"
-                  className="absolute right-10 mr-3"
-                  onPress={onOpen}
-                  onClick={() => {
-                    setIsEdit(true);
-                    setToBeEditedTask(task);
-                  }}>
-                  <EditIcon />
-                </Button>
-                <Button
-                  isIconOnly
-                  variant="flat"
-                  color="danger"
-                  aria-label="Delete task"
-                  size="sm"
-                  className="absolute right-0 mr-3"
-                  onClick={() => deleteTask(task.id, task.status)}>
-                  <DeleteIcon />
-                </Button>
-              </Card>
+              task.status == activeTab && (
+                <Card
+                  key={task.id}
+                  // className="flex items-center min-h-[3.5rem] rounded-lg border-1 border-slate-300 shadow-none transition-[shadow, border, scale] hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)] hover:border-none"
+                  className="flex items-center min-h-[3.5rem] border-1 border-slate-300 shadow-none transition-[shadow, border, scale] hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
+                  shadow="none">
+                  {/* <div className="bg-red-100 absolute w-2 h-full left-0" /> */}
+                  {/* <div className={taskCardTheme()} /> */}
+                  <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
+                    <div className="w-full overflow-hidden mr-3">
+                      <Checkbox
+                        lineThrough={task.status}
+                        checked={task.status}
+                        defaultChecked={task.status}
+                        onChange={(e) =>
+                          updateTaskStatus(e.target.checked, task.id)
+                        }
+                        color="success">
+                        <span className="font-regular text-slate-700">
+                          {task.title}
+                        </span>
+                      </Checkbox>
+                    </div>
+                    <div className="flex flex-row gap-2">
+                      <Button
+                        isIconOnly
+                        variant="flat"
+                        color="secondary"
+                        aria-label="Edit task"
+                        size="sm"
+                        onPress={() => {
+                          onOpen();
+                          setIsEdit(true);
+                          setToBeEditedTask(task);
+                        }}>
+                        <EditIcon />
+                      </Button>
+                      <Button
+                        isIconOnly
+                        variant="flat"
+                        color="danger"
+                        aria-label="Delete task"
+                        size="sm"
+                        onPress={() => deleteTask(task.id, task.status)}>
+                        <DeleteIcon />
+                      </Button>
+                    </div>
+                  </div>
+                  {task.description ? (
+                    // <div className="w-full m-0 p-4 pt-0 pl-5">
+                    <div className="w-full m-0 p-4 pt-0 pl-4">
+                      <p className="break-words leading-5 text-sm text-slate-500">
+                        {task.description}
+                      </p>
+                    </div>
+                  ) : null}
+                </Card>
+              )
             );
           })}
         </ScrollShadow>
@@ -192,6 +265,8 @@ export default function ToDo() {
         className="absolute bottom-5 right-5 p-0 m-0 max-w-[1rem]"
         color="primary"
         variant="shadow"
+        size="lg"
+        ref={modalBtnRef}
         onPress={onOpen}
         onClick={() => setIsEdit(false)}>
         <AddIcon />
@@ -199,8 +274,10 @@ export default function ToDo() {
       <TaskModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        taskInputRef={taskInputRef}
+        taskTitleRef={taskTitleRef}
+        taskDescRef={taskDescRef}
         addTask={addTask}
+        addTaskBtnRef={addTaskBtnRef}
         isEdit={isEdit}
         setIsEdit={setIsEdit}
         toBeEditedTask={toBeEditedTask}

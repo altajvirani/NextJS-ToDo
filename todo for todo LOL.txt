@@ -1,0 +1,11 @@
+tab logic
+solve text overflow problem
+creating backend
+load logic, i.e. loading a few items at a time
+loading screen
+description, deadline
+re-arrangeable items, with synchronised updates to indexes
+timely notification within specified interval periods
+
+handle modal mode in mobile device
+button click on enter key down

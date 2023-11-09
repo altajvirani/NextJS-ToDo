@@ -12,6 +12,7 @@
     "@nextui-org/react": "^2.1.13",
     "@nextui-org/system": "^2.0.10",
     "@nextui-org/theme": "^2.1.9",
+    "@videsk/tailwind-random-color": "^0.2.0-beta",
     "framer-motion": "^10.16.4",
     "next": "14.0.1",
     "react": "^18",
