@@ -50,7 +50,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       backdrop="blur"
       isOpen={isOpen}
       onOpenChange={() => onOpenChange()}
-      placement="center">
+      placement="top-center">
       <ModalContent>
         {(onClose) => (
           <>
