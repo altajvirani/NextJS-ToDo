@@ -17,7 +17,6 @@ import AddIcon from "@/app/assets/AddIcon.jsx";
 import EditIcon from "@/app/assets/EditIcon";
 import DeleteIcon from "@/app/assets/DeleteIcon";
 import TaskModal from "./TaskModal";
-// const tailwindRandomColor = require("@videsk/tailwind-random-color");
 
 export default function ToDo() {
   interface Tab {
@@ -43,38 +42,6 @@ export default function ToDo() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [toBeEditedTask, setToBeEditedTask] = useState<any>();
 
-  // const taskCardTheme = () => {
-  //   return (
-  //     new tailwindRandomColor({
-  //       colors: [
-  //         "slate",
-  //         "gray",
-  //         "zinc",
-  //         "neutral",
-  //         "stone",
-  //         "red",
-  //         "orange",
-  //         "amber",
-  //         "yellow",
-  //         "lime",
-  //         "green",
-  //         "emerald",
-  //         "teal",
-  //         "cyan",
-  //         "sky",
-  //         "blue",
-  //         "indigo",
-  //         "violet",
-  //         "purple",
-  //         "fuchsia",
-  //         "pink",
-  //         "rose",
-  //       ],
-  //       range: [2, 7],
-  //     }).pick() + " absolute w-2 h-full left-0"
-  //   );
-  // };
-
   const addTask = () => {
     let task: Task = {
       id: tasks.length + 1,
@@ -96,7 +63,11 @@ export default function ToDo() {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
         return task.id == beingEditedTask.id
-          ? { ...task, title: taskTitleRef.current.value }
+          ? {
+              ...task,
+              title: taskTitleRef.current.value,
+              description: taskDescRef.current.value,
+            }
           : task;
       });
     });
@@ -160,7 +131,7 @@ export default function ToDo() {
 
   return (
     <Card
-      className="w-full sm:w-full md:w-[35rem] lg:w-[35rem] xl:w-[35rem] 2xl:w-[35rem] h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
+      className="w-full sm:w-full md:w-[32rem] h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
       shadow="none">
       <Tabs
         onSelectionChange={(e) => toggleTaskChbx(e)}
@@ -195,17 +166,15 @@ export default function ToDo() {
         })}
       </Tabs>
       <CardBody className="p-0 pb-6">
-        <ScrollShadow className="w-full h-full flex flex-col gap-4 p-6">
+        <ScrollShadow className="w-full h-full p-6 pt-2">
           {tasks.map((task: Task) => {
             return (
               task.status == activeTab && (
                 <Card
                   key={task.id}
-                  // className="flex items-center min-h-[3.5rem] rounded-lg border-1 border-slate-300 shadow-none transition-[shadow, border, scale] hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)] hover:border-none"
-                  className="flex items-center min-h-[3.5rem] border-1 border-slate-300 shadow-none transition-[shadow, border, scale] hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
+                  className="cursor-pointer flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
                   shadow="none">
                   {/* <div className="bg-red-100 absolute w-2 h-full left-0" /> */}
-                  {/* <div className={taskCardTheme()} /> */}
                   <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
                     <div className="w-full overflow-hidden mr-3">
                       <Checkbox
@@ -221,7 +190,7 @@ export default function ToDo() {
                         </span>
                       </Checkbox>
                     </div>
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row flex-grow gap-2">
                       <Button
                         isIconOnly
                         variant="flat"
@@ -247,9 +216,8 @@ export default function ToDo() {
                     </div>
                   </div>
                   {task.description ? (
-                    // <div className="w-full m-0 p-4 pt-0 pl-5">
                     <div className="w-full m-0 p-4 pt-0 pl-4">
-                      <p className="break-words leading-5 text-sm text-slate-500">
+                      <p className="w-full break-words leading-5 text-sm text-slate-500">
                         {task.description}
                       </p>
                     </div>
