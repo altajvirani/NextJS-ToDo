@@ -169,61 +169,63 @@ export default function ToDo() {
         <ScrollShadow className="w-full h-full p-6 pt-2">
           {tasks.map((task: Task) => {
             return (
-              task.status == activeTab && (
-                <Card
-                  key={task.id}
-                  className="cursor-pointer flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
-                  shadow="none">
-                  {/* <div className="bg-red-100 absolute w-2 h-full left-0" /> */}
-                  <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
-                    <div className="w-full overflow-hidden mr-3">
-                      <Checkbox
-                        lineThrough={task.status}
-                        checked={task.status}
-                        defaultChecked={task.status}
-                        onChange={(e) =>
-                          updateTaskStatus(e.target.checked, task.id)
-                        }
-                        color="success">
-                        <span className="font-regular text-slate-700">
-                          {task.title}
-                        </span>
-                      </Checkbox>
-                    </div>
-                    <div className="flex flex-row flex-grow gap-2">
-                      <Button
-                        isIconOnly
-                        variant="flat"
-                        color="secondary"
-                        aria-label="Edit task"
-                        size="sm"
-                        onPress={() => {
-                          onOpen();
-                          setIsEdit(true);
-                          setToBeEditedTask(task);
-                        }}>
-                        <EditIcon />
-                      </Button>
-                      <Button
-                        isIconOnly
-                        variant="flat"
-                        color="danger"
-                        aria-label="Delete task"
-                        size="sm"
-                        onPress={() => deleteTask(task.id, task.status)}>
-                        <DeleteIcon />
-                      </Button>
-                    </div>
+              <Card
+                style={{
+                  display:
+                    (task.status && activeTab) || (!task.status && !activeTab)
+                      ? "block"
+                      : "none",
+                }}
+                key={task.id}
+                className="cursor-pointer flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
+                shadow="none">
+                <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
+                  <div className="w-full overflow-hidden mr-3">
+                    <Checkbox
+                      lineThrough={task.status}
+                      checked={task.status}
+                      onChange={(e) =>
+                        updateTaskStatus(e.target.checked, task.id)
+                      }
+                      color="success">
+                      <span className="font-regular text-slate-700">
+                        {task.title}
+                      </span>
+                    </Checkbox>
                   </div>
-                  {task.description ? (
-                    <div className="w-full m-0 p-4 pt-0 pl-4">
-                      <p className="w-full break-words leading-5 text-sm text-slate-500">
-                        {task.description}
-                      </p>
-                    </div>
-                  ) : null}
-                </Card>
-              )
+                  <div className="flex flex-row flex-grow gap-2">
+                    <Button
+                      isIconOnly
+                      variant="flat"
+                      color="secondary"
+                      aria-label="Edit task"
+                      size="sm"
+                      onPress={() => {
+                        onOpen();
+                        setIsEdit(true);
+                        setToBeEditedTask(task);
+                      }}>
+                      <EditIcon />
+                    </Button>
+                    <Button
+                      isIconOnly
+                      variant="flat"
+                      color="danger"
+                      aria-label="Delete task"
+                      size="sm"
+                      onPress={() => deleteTask(task.id, task.status)}>
+                      <DeleteIcon />
+                    </Button>
+                  </div>
+                </div>
+                {task.description ? (
+                  <div className="w-full m-0 p-4 pt-0 pl-4">
+                    <p className="w-full break-words leading-5 text-sm text-slate-500">
+                      {task.description}
+                    </p>
+                  </div>
+                ) : null}
+              </Card>
             );
           })}
         </ScrollShadow>

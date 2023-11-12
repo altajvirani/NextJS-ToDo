@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Input,
@@ -50,7 +50,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
       backdrop="blur"
       isOpen={isOpen}
       onOpenChange={() => onOpenChange()}
-      placement="top-center">
+      placement="top-center"
+      className="m-6">
       <ModalContent>
         {(onClose) => (
           <>

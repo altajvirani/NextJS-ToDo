@@ -5,7 +5,7 @@ import Provider from "./provider";
 export const metadata: Metadata = {
   title: "To-Do",
   description:
-    "A simple To-Do List Web App made in NextJS using Typescript, React and Tailwind CSS.",
+    "A simple To-Do List Web App made in NextJS using Typescript, React, Tailwind CSS and NextUI",
 };
 
 export default function RootLayout({

@@ -1,7 +1,28 @@
-tab logic
-creating backend
-load logic, i.e. loading a few items at a time
-loading screen
-deadline
+primary tasks:
+
+title text overflow problem in small screens
+avoiding scrollbar iwth w-full in mobile browser
+switch tabs when pressed arrow keys in desktops and when swiped on mobile devices
+switch to remaining tab when a new task is added
+lose focus from modal input when esc is pressed
+
 re-arrangeable items, with synchronised updates to indexes
+find logo
+deadline
 timely notification within specified interval periods
+
+creating backend, saving tasks to database
+load logic, i.e. loading a few items at a time
+authorization/authentication
+
+loading screen
+error screen
+hero for task section visible before adding tasks
+
+additional tasks:
+
+learn cloud (aws, docker) 
+deploy it to aws
+containerize the application
+deploy the containerized application to some cloud service
+learn about testing
