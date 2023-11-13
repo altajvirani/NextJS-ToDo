@@ -1,13 +1,14 @@
 primary tasks:
 
-switch tabs when pressed arrow keys in desktop and when swiped on mobile device
+resolve task checkbox reset when dragged in done tab
 toggle task status when touched or swiped on mobile device
 switch to "remaining" tab when a new task is added
+maintain the order of task based on the order of their completion
 title text overflow problem in small screens
 lose focus from modal input when esc is pressed
-avoiding scrollbar iwth w-full in mobile browser
+switch tabs when pressed arrow keys in desktop and when swiped on mobile device
+avoiding scrollbar with w-full in mobile browser
 
-re-arrangeable items, with synchronised updates to indexes
 creating backend, saving tasks to database *
 authorization/authentication *
 find logo

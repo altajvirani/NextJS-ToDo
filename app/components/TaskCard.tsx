@@ -36,7 +36,6 @@ export default function TaskCard({
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      key={task.id}
       style={{
         ...dndStyle,
         display:
@@ -49,11 +48,15 @@ export default function TaskCard({
       <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
         <div className="w-full overflow-hidden mr-3">
           <Checkbox
-            lineThrough={task.status}
             checked={task.status}
             onChange={(e) => updateTaskStatus(e.target.checked, task.id)}
             color="success">
-            <span className="font-regular text-slate-700">{task.title}</span>
+            <span
+              className={`font-regular ${
+                task.status ? "line-through text-slate-500" : "text-slate-700"
+              }`}>
+              {task.title}
+            </span>
           </Checkbox>
         </div>
         <div className="flex flex-row flex-grow gap-2">

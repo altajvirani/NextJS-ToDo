@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -61,9 +61,6 @@ export default function ToDo() {
         return tab.name == "Remaining" ? { ...tab, count: tab.count + 1 } : tab;
       });
     });
-
-    console.log(localStorage);
-    console.log(localStorage);
   };
 
   const editTask = (beingEditedTask: Task) => {
@@ -101,7 +98,7 @@ export default function ToDo() {
     });
   };
 
-  const updateTaskStatus = (isChecked: boolean, taskId: number) => {
+  const updateTaskStatus = useCallback((isChecked: boolean, taskId: number) => {
     setTasks((tasks) => {
       return tasks.map((task) => {
         return task.id == taskId ? { ...task, status: isChecked } : task;
@@ -119,7 +116,7 @@ export default function ToDo() {
           : { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 };
       });
     });
-  };
+  }, []);
 
   const dndId = useId();
   const handleDragEnd = (e: any) => {
@@ -128,7 +125,9 @@ export default function ToDo() {
       setTasks((tasks) => {
         const fromIndex = tasks.findIndex((task) => task.id === active.id);
         const toIndex = tasks.findIndex((task) => task.id === over.id);
-        return arrayMove(tasks, fromIndex, toIndex);
+        let arr = arrayMove(tasks, fromIndex, toIndex);
+        console.log(arr);
+        return arr;
       });
     }
   };
@@ -193,9 +192,10 @@ export default function ToDo() {
             <SortableContext
               items={tasks}
               strategy={verticalListSortingStrategy}>
-              {tasks.map((task: Task) => {
+              {tasks.map((task: Task, key: number) => {
                 return (
                   <TaskCard
+                    key={key}
                     task={task}
                     activeTab={activeTab}
                     updateTaskStatus={updateTaskStatus}
