@@ -63,7 +63,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 autoFocus
                 isRequired
                 variant="faded"
-                label="Task"
+                label="Title"
                 placeholder="Eg. Complete homework"
                 ref={taskTitleRef}
                 maxLength={40}

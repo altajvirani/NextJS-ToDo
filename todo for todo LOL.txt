@@ -1,20 +1,21 @@
 primary tasks:
 
+switch tabs when pressed arrow keys in desktop and when swiped on mobile device
+toggle task status when touched or swiped on mobile device
+switch to "remaining" tab when a new task is added
 title text overflow problem in small screens
-avoiding scrollbar iwth w-full in mobile browser
-switch tabs when pressed arrow keys in desktops and when swiped on mobile devices
-switch to remaining tab when a new task is added
 lose focus from modal input when esc is pressed
+avoiding scrollbar iwth w-full in mobile browser
 
 re-arrangeable items, with synchronised updates to indexes
+creating backend, saving tasks to database *
+authorization/authentication *
 find logo
-deadline
-timely notification within specified interval periods
 
-creating backend, saving tasks to database
+deadline *
+timely notification within specified interval periods *
+custom scrollbar
 load logic, i.e. loading a few items at a time
-authorization/authentication
-
 loading screen
 error screen
 hero for task section visible before adding tasks

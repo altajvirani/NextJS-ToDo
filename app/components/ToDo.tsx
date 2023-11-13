@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import {
   Card,
   CardBody,
-  Checkbox,
   Tabs,
   Tab,
   Chip,
@@ -13,10 +12,15 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Task } from "@/app/types";
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import AddIcon from "@/app/assets/AddIcon.jsx";
-import EditIcon from "@/app/assets/EditIcon";
-import DeleteIcon from "@/app/assets/DeleteIcon";
 import TaskModal from "./TaskModal";
+import TaskCard from "./TaskCard";
 
 export default function ToDo() {
   interface Tab {
@@ -57,6 +61,9 @@ export default function ToDo() {
         return tab.name == "Remaining" ? { ...tab, count: tab.count + 1 } : tab;
       });
     });
+
+    console.log(localStorage);
+    console.log(localStorage);
   };
 
   const editTask = (beingEditedTask: Task) => {
@@ -114,6 +121,18 @@ export default function ToDo() {
     });
   };
 
+  const dndId = useId();
+  const handleDragEnd = (e: any) => {
+    const { active, over } = e;
+    if (active.id !== over.id) {
+      setTasks((tasks) => {
+        const fromIndex = tasks.findIndex((task) => task.id === active.id);
+        const toIndex = tasks.findIndex((task) => task.id === over.id);
+        return arrayMove(tasks, fromIndex, toIndex);
+      });
+    }
+  };
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const addTaskBtnRef = useRef<HTMLButtonElement>(null);
@@ -167,67 +186,28 @@ export default function ToDo() {
       </Tabs>
       <CardBody className="p-0 pb-6">
         <ScrollShadow className="w-full h-full p-6 pt-2">
-          {tasks.map((task: Task) => {
-            return (
-              <Card
-                style={{
-                  display:
-                    (task.status && activeTab) || (!task.status && !activeTab)
-                      ? "block"
-                      : "none",
-                }}
-                key={task.id}
-                className="cursor-pointer flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
-                shadow="none">
-                <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
-                  <div className="w-full overflow-hidden mr-3">
-                    <Checkbox
-                      lineThrough={task.status}
-                      checked={task.status}
-                      onChange={(e) =>
-                        updateTaskStatus(e.target.checked, task.id)
-                      }
-                      color="success">
-                      <span className="font-regular text-slate-700">
-                        {task.title}
-                      </span>
-                    </Checkbox>
-                  </div>
-                  <div className="flex flex-row flex-grow gap-2">
-                    <Button
-                      isIconOnly
-                      variant="flat"
-                      color="secondary"
-                      aria-label="Edit task"
-                      size="sm"
-                      onPress={() => {
-                        onOpen();
-                        setIsEdit(true);
-                        setToBeEditedTask(task);
-                      }}>
-                      <EditIcon />
-                    </Button>
-                    <Button
-                      isIconOnly
-                      variant="flat"
-                      color="danger"
-                      aria-label="Delete task"
-                      size="sm"
-                      onPress={() => deleteTask(task.id, task.status)}>
-                      <DeleteIcon />
-                    </Button>
-                  </div>
-                </div>
-                {task.description ? (
-                  <div className="w-full m-0 p-4 pt-0 pl-4">
-                    <p className="w-full break-words leading-5 text-sm text-slate-500">
-                      {task.description}
-                    </p>
-                  </div>
-                ) : null}
-              </Card>
-            );
-          })}
+          <DndContext
+            id={dndId}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={tasks}
+              strategy={verticalListSortingStrategy}>
+              {tasks.map((task: Task) => {
+                return (
+                  <TaskCard
+                    task={task}
+                    activeTab={activeTab}
+                    updateTaskStatus={updateTaskStatus}
+                    onOpen={onOpen}
+                    setIsEdit={setIsEdit}
+                    setToBeEditedTask={setToBeEditedTask}
+                    deleteTask={deleteTask}
+                  />
+                );
+              })}
+            </SortableContext>
+          </DndContext>
         </ScrollShadow>
       </CardBody>
       <Button
