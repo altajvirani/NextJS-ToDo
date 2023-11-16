@@ -151,7 +151,7 @@ export default function ToDo() {
 
   return (
     <Card
-      className="w-full sm:w-full md:w-[32rem] h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3rem)] xl:h-[calc(100dvh-5rem)] 2xl:h-[calc(100dvh-6rem)] bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
+      className="w-full sm:w-full md:w-[32rem] h-[100dvh] bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
       shadow="none">
       <Tabs
         onSelectionChange={(e) => toggleTaskChbx(e)}
