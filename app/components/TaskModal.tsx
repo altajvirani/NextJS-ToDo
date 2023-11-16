@@ -17,12 +17,12 @@ interface TaskModalProps {
   taskTitleRef: React.RefObject<any>;
   taskDescRef: React.RefObject<any>;
   addTask: () => void;
-  addTaskBtnRef: React.RefObject<HTMLButtonElement>;
+  addTaskBtnRef?: React.MutableRefObject<HTMLButtonElement | null>;
   isEdit: boolean;
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
   toBeEditedTask?: Task;
   setToBeEditedTask: React.Dispatch<React.SetStateAction<any>>;
-  editTask?: (task: Task) => void;
+  editTask: (task: Task) => void;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -41,7 +41,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   useEffect(() => {
     if (!isOpen) {
       setIsEdit(false);
-      setToBeEditedTask(undefined);
+      setToBeEditedTask(null);
     }
   }, [isOpen]);
 
@@ -67,7 +67,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 placeholder="Eg. Complete homework"
                 ref={taskTitleRef}
                 maxLength={40}
-                defaultValue={isEdit ? toBeEditedTask!.title : ""}
+                defaultValue={isEdit ? toBeEditedTask?.title : ""}
                 onKeyDown={(e) => {
                   const descTxtArea = taskDescRef.current;
                   if (e.key === "Enter") {
@@ -86,9 +86,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 placeholder="Eg. Finish quadratic equations and mensuration assignments"
                 ref={taskDescRef}
                 maxLength={150}
-                defaultValue={isEdit ? toBeEditedTask!.description : ""}
+                defaultValue={isEdit ? toBeEditedTask?.description : ""}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") addTaskBtnRef.current?.click();
+                  if (e.key === "Enter") addTaskBtnRef?.current?.click();
                 }}
               />
             </ModalBody>
@@ -98,14 +98,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 color="primary"
                 variant="shadow"
                 onPress={() => {
-                  if (taskTitleRef.current.value.trim().length != 0) onClose();
+                  if (taskTitleRef.current.value.trim().length) {
+                    if (isEdit && toBeEditedTask) editTask(toBeEditedTask);
+                    else addTask();
+                    onClose();
+                  }
                 }}
-                onClick={(e) => {
-                  e.currentTarget.disabled = true;
-                  if (isEdit) editTask!(toBeEditedTask!);
-                  else if (taskTitleRef.current.value.trim().length != 0)
-                    addTask();
-                }}>
+                onClick={(e) => (e.currentTarget.disabled = true)}>
                 Go
               </Button>
             </ModalFooter>

@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Task } from "@/app/types";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
@@ -38,20 +38,20 @@ export default function ToDo() {
     setActiveTab(e == 0 ? false : true);
   };
 
-  const taskTitleRef: React.RefObject<any> = useRef();
-  const taskDescRef: React.RefObject<any> = useRef();
   const initialTasks: Task[] = [];
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
+  const taskTitleRef = useRef<HTMLInputElement>();
+  const taskDescRef = useRef<HTMLInputElement>();
+
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [toBeEditedTask, setToBeEditedTask] = useState<any>();
+  const [toBeEditedTask, setToBeEditedTask] = useState<Task>();
 
   const addTask = () => {
     let task: Task = {
       id: tasks.length + 1,
-      title: taskTitleRef.current.value,
-      description:
-        taskDescRef.current.value != "" ? taskDescRef.current.value : null,
+      title: taskTitleRef.current?.value ?? "",
+      description: taskDescRef.current?.value ?? "",
       status: false,
     };
     setTasks((prevTasks) => [...prevTasks, task]);
@@ -69,18 +69,19 @@ export default function ToDo() {
         return task.id == beingEditedTask.id
           ? {
               ...task,
-              title: taskTitleRef.current.value,
-              description: taskDescRef.current.value,
+              title: taskTitleRef.current?.value ?? "",
+              description: taskDescRef.current?.value ?? "",
             }
           : task;
       });
     });
+
     setIsEdit(false);
   };
 
   const deleteTask = (taskId: number, taskStatus: boolean) => {
     setTasks((tasks) => {
-      return tasks.filter((task) => task.id != taskId);
+      return tasks.filter((task) => task.id !== taskId);
     });
 
     setTabs((tabs) => {
@@ -98,35 +99,36 @@ export default function ToDo() {
     });
   };
 
-  const updateTaskStatus = useCallback((isChecked: boolean, taskId: number) => {
+  const updateTaskStatus = (isCheckedOrSwiped: boolean, taskId: number) => {
     setTasks((tasks) => {
       return tasks.map((task) => {
-        return task.id == taskId ? { ...task, status: isChecked } : task;
+        return task.id == taskId
+          ? { ...task, status: isCheckedOrSwiped }
+          : task;
       });
     });
 
     setTabs((tabs) => {
       return tabs.map((tab) => {
-        return isChecked
+        return isCheckedOrSwiped
           ? tab.name == "Remaining"
-            ? { ...tab, count: tab.count - 1 }
+            ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
             : { ...tab, count: tab.count + 1 }
           : tab.name == "Remaining"
           ? { ...tab, count: tab.count + 1 }
           : { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 };
       });
     });
-  }, []);
+  };
 
   const dndId = useId();
-  const handleDragEnd = (e: any) => {
+  const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
-    if (active.id !== over.id) {
+    if (active.id !== over?.id) {
       setTasks((tasks) => {
         const fromIndex = tasks.findIndex((task) => task.id === active.id);
-        const toIndex = tasks.findIndex((task) => task.id === over.id);
+        const toIndex = tasks.findIndex((task) => task.id === over?.id);
         let arr = arrayMove(tasks, fromIndex, toIndex);
-        console.log(arr);
         return arr;
       });
     }
@@ -138,7 +140,7 @@ export default function ToDo() {
 
   useEffect(() => {
     const handleEnter = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !isOpen) modalBtnRef.current!.click();
+      if (e.key === "Enter" && !isOpen) modalBtnRef.current?.click();
     };
 
     document.addEventListener("keydown", handleEnter);

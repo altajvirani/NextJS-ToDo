@@ -4,15 +4,15 @@ import EditIcon from "../assets/EditIcon";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface TaskCardProps {
   task: Task;
   activeTab: boolean;
-  updateTaskStatus: (isChecked: boolean, taskId: number) => void;
+  updateTaskStatus: (isCheckedOrSwiped: boolean, taskId: number) => void;
   onOpen: () => void;
   setIsEdit: (value: React.SetStateAction<boolean>) => void;
-  setToBeEditedTask: (value: any) => void;
+  setToBeEditedTask: (value: Task) => void;
   deleteTask: (taskId: number, taskStatus: boolean) => void;
 }
 
@@ -32,31 +32,39 @@ export default function TaskCard({
     transition,
   };
 
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const minSwipeDistance = 50;
-  const onTouchStart = (e: any) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
-  const onTouchMove = (e: any) => setTouchEnd(e.targetTouches[0].clientX);
-  const onTouchEnd = () => {
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe || isRightSwipe)
-      console.log("swipe", isLeftSwipe ? "left" : "right");
+    if (isLeftSwipe || isRightSwipe) updateTaskStatus(!task.status, task.id);
   };
+
+  useEffect(() => {
+    const chkbx = document.getElementById(
+      `chkbx-${task.id}`
+    ) as HTMLInputElement;
+    if (chkbx) chkbx.checked = task.status;
+  }, [task.status]);
 
   return (
     <Card
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{
         ...dndStyle,
         display:
@@ -71,8 +79,10 @@ export default function TaskCard({
         <div className="w-full overflow-hidden mr-3">
           <Checkbox
             checked={task.status}
+            defaultChecked={task.status}
             onChange={(e) => updateTaskStatus(e.target.checked, task.id)}
-            color="success">
+            color="success"
+            className={`chkbx-${task.id}`}>
             <span
               className={`font-regular ${
                 task.status ? "line-through text-slate-500" : "text-slate-700"
@@ -89,9 +99,9 @@ export default function TaskCard({
             aria-label="Edit task"
             size="sm"
             onPress={() => {
-              onOpen();
               setIsEdit(true);
               setToBeEditedTask(task);
+              onOpen();
             }}>
             <EditIcon />
           </Button>
