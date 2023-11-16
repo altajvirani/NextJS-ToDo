@@ -4,6 +4,7 @@ import EditIcon from "../assets/EditIcon";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "../types";
+import { useState } from "react";
 
 interface TaskCardProps {
   task: Task;
@@ -31,17 +32,38 @@ export default function TaskCard({
     transition,
   };
 
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
+  const onTouchStart = (e: any) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const onTouchMove = (e: any) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe || isRightSwipe)
+      console.log("swipe", isLeftSwipe ? "left" : "right");
+  };
+
   return (
     <Card
       ref={setNodeRef}
       {...attributes}
       {...listeners}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
       style={{
         ...dndStyle,
         display:
           (task.status && activeTab) || (!task.status && !activeTab)
             ? "block"
             : "none",
+        touchAction: "none",
       }}
       className="cursor-pointer flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
       shadow="none">

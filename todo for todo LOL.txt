@@ -1,25 +1,25 @@
 primary tasks:
 
-resolve task checkbox reset when dragged in done tab
+save tasks in local storage
 toggle task status when touched or swiped on mobile device
 switch to "remaining" tab when a new task is added
-maintain the order of task based on the order of their completion
 title text overflow problem in small screens
 lose focus from modal input when esc is pressed
 switch tabs when pressed arrow keys in desktop and when swiped on mobile device
+XX maintain the order of task based on the order of their completion
 avoiding scrollbar with w-full in mobile browser
 
-creating backend, saving tasks to database *
-authorization/authentication *
+XX creating backend, saving tasks to database *
+XX authorization/authentication *
 find logo
 
-deadline *
-timely notification within specified interval periods *
-custom scrollbar
-load logic, i.e. loading a few items at a time
-loading screen
-error screen
-hero for task section visible before adding tasks
+XX deadline *
+XX timely notification within specified interval periods *
+XX custom scrollbar
+XX load logic, i.e. loading a few items at a time
+XX loading screen
+XX error screen
+XX hero for task section visible before adding tasks
 
 additional tasks:
 

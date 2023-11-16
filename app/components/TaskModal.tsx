@@ -98,12 +98,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 color="primary"
                 variant="shadow"
                 onPress={() => {
-                  if (taskTitleRef.current.value != "") onClose();
+                  if (taskTitleRef.current.value.trim().length != 0) onClose();
                 }}
                 onClick={(e) => {
                   e.currentTarget.disabled = true;
                   if (isEdit) editTask!(toBeEditedTask!);
-                  else if (taskTitleRef.current.value != "") addTask();
+                  else if (taskTitleRef.current.value.trim().length != 0)
+                    addTask();
                 }}>
                 Go
               </Button>

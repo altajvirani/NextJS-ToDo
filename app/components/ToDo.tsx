@@ -192,10 +192,10 @@ export default function ToDo() {
             <SortableContext
               items={tasks}
               strategy={verticalListSortingStrategy}>
-              {tasks.map((task: Task, key: number) => {
+              {tasks.map((task: Task) => {
                 return (
                   <TaskCard
-                    key={key}
+                    key={task.id}
                     task={task}
                     activeTab={activeTab}
                     updateTaskStatus={updateTaskStatus}
