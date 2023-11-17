@@ -199,7 +199,7 @@ export default function ToDo() {
                     size="sm"
                     variant="flat"
                     radius="none"
-                    className=" text-slate-500 pb-[0.2rem] rounded-md">
+                    className=" text-slate-500 pb-[0.15rem] rounded-md">
                     {tab.count}
                   </Chip>
                 </div>
