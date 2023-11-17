@@ -172,7 +172,6 @@ export default function ToDo() {
 
   return (
     <Card
-      // className="w-full sm:w-full md:w-[32rem] h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
       className={`${isWidthSmaller ? "w-full" : "w-[32rem]"}
         " h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
       `}
