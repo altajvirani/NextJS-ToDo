@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useId, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Card,
   CardBody,
@@ -22,7 +28,22 @@ import AddIcon from "@/app/assets/AddIcon.jsx";
 import TaskModal from "./TaskModal";
 import TaskCard from "./TaskCard";
 
+const handleResize = () => {
+  const [isWidthSmaller, setIsWidthSmaller] = useState<boolean>();
+  useLayoutEffect(() => {
+    function onUpdateSize() {
+      setIsWidthSmaller(window.innerWidth <= window.innerHeight);
+    }
+    window.addEventListener("resize", onUpdateSize);
+    onUpdateSize();
+    return () => window.removeEventListener("resize", onUpdateSize);
+  }, []);
+  return isWidthSmaller;
+};
+
 export default function ToDo() {
+  const isWidthSmaller = handleResize();
+
   interface Tab {
     name: string;
     count: number;
@@ -151,7 +172,10 @@ export default function ToDo() {
 
   return (
     <Card
-      className="w-full sm:w-full md:w-[32rem] h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
+      // className="w-full sm:w-full md:w-[32rem] h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
+      className={`${isWidthSmaller ? "w-full" : "w-[32rem]"}
+        " h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
+      `}
       shadow="none">
       <Tabs
         onSelectionChange={(e) => toggleTaskChbx(e)}
