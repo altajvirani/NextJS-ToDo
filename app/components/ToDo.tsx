@@ -59,8 +59,20 @@ export default function ToDo() {
     setActiveTab(e == 0 ? false : true);
   };
 
+  const getStoredTasks = () =>
+    typeof window !== undefined &&
+    typeof localStorage !== undefined &&
+    localStorage.getItem("tasks")
+      ? JSON.parse(localStorage.getItem("tasks")!)
+      : null;
+
   const initialTasks: Task[] = [];
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(getStoredTasks() ?? initialTasks);
+  useEffect(() => {
+    typeof window !== undefined && typeof localStorage !== undefined
+      ? localStorage.setItem("tasks", JSON.stringify(tasks))
+      : null;
+  }, [tasks]);
 
   const taskTitleRef = useRef<HTMLInputElement>();
   const taskDescRef = useRef<HTMLInputElement>();
@@ -77,69 +89,65 @@ export default function ToDo() {
     };
     setTasks((prevTasks) => [...prevTasks, task]);
 
-    setTabs((tabs) => {
-      return tabs.map((tab) => {
-        return tab.name == "Remaining" ? { ...tab, count: tab.count + 1 } : tab;
-      });
-    });
+    setTabs((tabs) =>
+      tabs.map((tab) =>
+        tab.name == "Remaining" ? { ...tab, count: tab.count + 1 } : tab
+      )
+    );
   };
 
   const editTask = (beingEditedTask: Task) => {
-    setTasks((prevTasks) => {
-      return prevTasks.map((task) => {
-        return task.id == beingEditedTask.id
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id == beingEditedTask.id
           ? {
               ...task,
               title: taskTitleRef.current?.value ?? "",
               description: taskDescRef.current?.value ?? "",
             }
-          : task;
-      });
-    });
+          : task
+      )
+    );
 
     setIsEdit(false);
   };
 
   const deleteTask = (taskId: number, taskStatus: boolean) => {
-    setTasks((tasks) => {
-      return tasks.filter((task) => task.id !== taskId);
-    });
+    setTasks((tasks) => tasks.filter((task) => task.id !== taskId));
 
-    setTabs((tabs) => {
-      return taskStatus
-        ? tabs.map((tab) => {
-            return tab.name == "Done"
+    setTabs((tabs) =>
+      taskStatus
+        ? tabs.map((tab) =>
+            tab.name == "Done"
               ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
-              : tab;
-          })
-        : tabs.map((tab) => {
-            return tab.name == "Remaining"
+              : tab
+          )
+        : tabs.map((tab) =>
+            tab.name == "Remaining"
               ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
-              : tab;
-          });
-    });
+              : tab
+          )
+    );
   };
 
   const updateTaskStatus = (isCheckedOrSwiped: boolean, taskId: number) => {
-    setTasks((tasks) => {
-      return tasks.map((task) => {
-        return task.id == taskId
-          ? { ...task, status: isCheckedOrSwiped }
-          : task;
-      });
-    });
+    setTasks((tasks) =>
+      tasks.map((task) =>
+        task.id == taskId ? { ...task, status: isCheckedOrSwiped } : task
+      )
+    );
 
-    setTabs((tabs) => {
-      return tabs.map((tab) => {
-        return isCheckedOrSwiped
+    setTabs((tabs) =>
+      tabs.map((tab) =>
+        isCheckedOrSwiped
           ? tab.name == "Remaining"
             ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
             : { ...tab, count: tab.count + 1 }
           : tab.name == "Remaining"
           ? { ...tab, count: tab.count + 1 }
-          : { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 };
-      });
-    });
+          : { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
+      )
+    );
   };
 
   const dndId = useId();
@@ -149,8 +157,12 @@ export default function ToDo() {
       setTasks((tasks) => {
         const fromIndex = tasks.findIndex((task) => task.id === active.id);
         const toIndex = tasks.findIndex((task) => task.id === over?.id);
-        let arr = arrayMove(tasks, fromIndex, toIndex);
-        return arr;
+        return arrayMove(tasks, fromIndex, toIndex).map(
+          (task: Task, key: number) => ({
+            ...task,
+            id: key + 1,
+          })
+        );
       });
     }
   };
@@ -165,9 +177,7 @@ export default function ToDo() {
     };
 
     document.addEventListener("keydown", handleEnter);
-    return () => {
-      document.removeEventListener("keydown", handleEnter);
-    };
+    return () => document.removeEventListener("keydown", handleEnter);
   }, [isOpen, modalBtnRef]);
 
   return (
@@ -188,25 +198,23 @@ export default function ToDo() {
           tab: "max-w-fit px-0 h-12",
           tabContent: "group-data-[selected=true]:text-slate-900",
         }}>
-        {tabs.map((tab, key) => {
-          return (
-            <Tab
-              key={key}
-              title={
-                <div className="flex items-center space-x-2">
-                  <span className="font-bold">{tab.name}</span>
-                  <Chip
-                    size="sm"
-                    variant="flat"
-                    radius="none"
-                    className=" text-slate-500 pb-[0.15rem] rounded-md">
-                    {tab.count}
-                  </Chip>
-                </div>
-              }
-            />
-          );
-        })}
+        {tabs.map((tab, key) => (
+          <Tab
+            key={key}
+            title={
+              <div className="flex items-center space-x-2">
+                <span className="font-bold">{tab.name}</span>
+                <Chip
+                  size="sm"
+                  variant="flat"
+                  radius="none"
+                  className=" text-slate-500 pb-[0.15rem] rounded-md">
+                  {tab.count}
+                </Chip>
+              </div>
+            }
+          />
+        ))}
       </Tabs>
       <CardBody className="p-0 pb-6">
         <ScrollShadow className="w-full h-full p-6 pt-2">
@@ -217,20 +225,18 @@ export default function ToDo() {
             <SortableContext
               items={tasks}
               strategy={verticalListSortingStrategy}>
-              {tasks.map((task: Task) => {
-                return (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    activeTab={activeTab}
-                    updateTaskStatus={updateTaskStatus}
-                    onOpen={onOpen}
-                    setIsEdit={setIsEdit}
-                    setToBeEditedTask={setToBeEditedTask}
-                    deleteTask={deleteTask}
-                  />
-                );
-              })}
+              {tasks.map((task: Task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  activeTab={activeTab}
+                  updateTaskStatus={updateTaskStatus}
+                  onOpen={onOpen}
+                  setIsEdit={setIsEdit}
+                  setToBeEditedTask={setToBeEditedTask}
+                  deleteTask={deleteTask}
+                />
+              ))}
             </SortableContext>
           </DndContext>
         </ScrollShadow>

@@ -4,7 +4,7 @@ import EditIcon from "../assets/EditIcon";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "../types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface TaskCardProps {
   task: Task;
@@ -27,10 +27,6 @@ export default function TaskCard({
 }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: task.id });
-  const dndStyle = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -50,13 +46,6 @@ export default function TaskCard({
     if (isLeftSwipe || isRightSwipe) updateTaskStatus(!task.status, task.id);
   };
 
-  useEffect(() => {
-    const chkbx = document.getElementById(
-      `chkbx-${task.id}`
-    ) as HTMLInputElement;
-    if (chkbx) chkbx.checked = task.status;
-  }, [task.status]);
-
   return (
     <Card
       ref={setNodeRef}
@@ -65,15 +54,17 @@ export default function TaskCard({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onPress={() => updateTaskStatus(!task.status, task.id)}
       style={{
-        ...dndStyle,
+        transform: CSS.Transform.toString(transform),
+        transition,
         display:
           (task.status && activeTab) || (!task.status && !activeTab)
             ? "block"
             : "none",
         touchAction: "none",
       }}
-      className="cursor-pointer flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
+      className="flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.2)]"
       shadow="none">
       <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
         <div className="w-full overflow-hidden mr-3">
