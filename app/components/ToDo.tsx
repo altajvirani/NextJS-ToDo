@@ -31,9 +31,8 @@ import TaskCard from "./TaskCard";
 const handleResize = () => {
   const [isWidthSmaller, setIsWidthSmaller] = useState<boolean>();
   useLayoutEffect(() => {
-    function onUpdateSize() {
+    const onUpdateSize = () =>
       setIsWidthSmaller(window.innerWidth <= window.innerHeight);
-    }
     window.addEventListener("resize", onUpdateSize);
     onUpdateSize();
     return () => window.removeEventListener("resize", onUpdateSize);
@@ -55,24 +54,10 @@ export default function ToDo() {
   ]);
 
   const [activeTab, setActiveTab] = useState<boolean>(false);
-  const toggleTaskChbx = (e: React.Key) => {
-    setActiveTab(e == 0 ? false : true);
-  };
-
-  const getStoredTasks = () =>
-    typeof window !== undefined &&
-    typeof localStorage !== undefined &&
-    localStorage.getItem("tasks")
-      ? JSON.parse(localStorage.getItem("tasks")!)
-      : null;
+  const toggleTaskChbx = (e: React.Key) => setActiveTab(e == 0 ? false : true);
 
   const initialTasks: Task[] = [];
-  const [tasks, setTasks] = useState<Task[]>(getStoredTasks() ?? initialTasks);
-  useEffect(() => {
-    typeof window !== undefined && typeof localStorage !== undefined
-      ? localStorage.setItem("tasks", JSON.stringify(tasks))
-      : null;
-  }, [tasks]);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
   const taskTitleRef = useRef<HTMLInputElement>();
   const taskDescRef = useRef<HTMLInputElement>();
@@ -172,9 +157,8 @@ export default function ToDo() {
   const addTaskBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const handleEnter = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !isOpen) modalBtnRef.current?.click();
-    };
+    const handleEnter = (e: KeyboardEvent) =>
+      e.key === "Enter" && !isOpen ? modalBtnRef.current?.click() : null;
 
     document.addEventListener("keydown", handleEnter);
     return () => document.removeEventListener("keydown", handleEnter);
@@ -183,8 +167,11 @@ export default function ToDo() {
   return (
     <Card
       className={`${isWidthSmaller ? "w-full" : "w-[32rem]"}
-        " h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgb(0,0,0,0.15)]"
+        " h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.15)]"
       `}
+      style={{
+        boxShadow: "0rem 0rem 3rem -0.4rem rgba(0,0,0,0.15)",
+      }}
       shadow="none">
       <Tabs
         onSelectionChange={(e) => toggleTaskChbx(e)}
