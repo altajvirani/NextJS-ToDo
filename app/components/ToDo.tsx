@@ -28,7 +28,7 @@ import AddIcon from "@/app/assets/AddIcon.jsx";
 import TaskModal from "./TaskModal";
 import TaskCard from "./TaskCard";
 
-const handleResize = () => {
+const useHandleResize = () => {
   const [isWidthSmaller, setIsWidthSmaller] = useState<boolean>();
   useLayoutEffect(() => {
     const onUpdateSize = () =>
@@ -41,23 +41,45 @@ const handleResize = () => {
 };
 
 export default function ToDo() {
-  const isWidthSmaller = handleResize();
+  const initialRender = useRef(true);
+  const isWidthSmaller = useHandleResize();
 
   interface Tab {
     name: string;
     count: number;
   }
 
-  const [tabs, setTabs] = useState<Tab[]>([
+  const initialTabs: Tab[] = [
     { name: "Remaining", count: 0 },
     { name: "Done", count: 0 },
-  ]);
+  ];
+  const [tabs, setTabs] = useState<Tab[]>(initialTabs);
 
   const [activeTab, setActiveTab] = useState<boolean>(false);
   const toggleTaskChbx = (e: React.Key) => setActiveTab(e == 0 ? false : true);
 
   const initialTasks: Task[] = [];
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+      const storedTabs = localStorage.getItem("tabs");
+      const storedTasks = localStorage.getItem("tasks");
+      setTabs(storedTabs ? JSON.parse(storedTabs) : initialTabs);
+      setTasks(storedTasks ? JSON.parse(storedTasks) : initialTasks);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+      localStorage.setItem("tabs", JSON.stringify(tabs));
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+  }, [tabs, tasks]);
 
   const taskTitleRef = useRef<HTMLInputElement>();
   const taskDescRef = useRef<HTMLInputElement>();
