@@ -69,8 +69,7 @@ export default function TaskCard({
       <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
         <div className="w-full overflow-hidden mr-3">
           <Checkbox
-            checked={task.status}
-            defaultChecked={task.status}
+            isSelected={task.status}
             onChange={(e) => updateTaskStatus(e.target.checked, task.id)}
             color="success"
             className={`chkbx-${task.id}`}>

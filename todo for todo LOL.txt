@@ -1,29 +1,6 @@
 primary tasks:
 
-save tasks in local storage *
 toggle task checkbox when swiped on mobile device
-title text overflow problem in small screens
-close modal when esc is pressed
 switch to "remaining" tab when a new task is added
 switch tabs when pressed arrow keys in desktop and when swiped on mobile device
-maintain the order of task based on the order of their completion
-
-creating backend, saving tasks to database *
-authorization/authentication 
 find logo *
-
-deadline 
-timely notification within specified interval periods 
-custom scrollbar
-load logic, i.e. loading a few items at a time
-loading screen
-error screen
-hero for task section visible before adding tasks
-
-additional tasks:
-
-learn cloud (aws, docker) 
-deploy it to aws
-containerize the application
-deploy the containerized application to some cloud service
-learn about testing

@@ -56,7 +56,8 @@ export default function ToDo() {
   const [tabs, setTabs] = useState<Tab[]>(initialTabs);
 
   const [activeTab, setActiveTab] = useState<boolean>(false);
-  const toggleTaskChbx = (e: React.Key) => setActiveTab(e == 0 ? false : true);
+  const toggleTaskVisibility = (e: React.Key) =>
+    setActiveTab(e == 0 ? false : true);
 
   const initialTasks: Task[] = [];
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -196,7 +197,7 @@ export default function ToDo() {
       }}
       shadow="none">
       <Tabs
-        onSelectionChange={(e) => toggleTaskChbx(e)}
+        onSelectionChange={(e) => toggleTaskVisibility(e)}
         aria-label="Options"
         color="primary"
         variant="underlined"
