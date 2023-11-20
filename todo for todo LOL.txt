@@ -1,3 +1,0 @@
-primary tasks:
-
-find logo *
