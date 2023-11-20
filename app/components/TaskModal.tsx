@@ -72,11 +72,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   const descTxtArea = taskDescRef.current;
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    descTxtArea.focus();
-                    descTxtArea.setSelectionRange(
-                      descTxtArea.value.length,
-                      descTxtArea.value.length
-                    );
+                    if (taskTitleRef.current.value.trim().length) {
+                      descTxtArea.focus();
+                      descTxtArea.setSelectionRange(
+                        descTxtArea.value.length,
+                        descTxtArea.value.length
+                      );
+                    }
                   }
                 }}
               />
@@ -87,9 +89,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 ref={taskDescRef}
                 maxLength={150}
                 defaultValue={isEdit ? toBeEditedTask?.description : ""}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") addTaskBtnRef?.current?.click();
-                }}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && taskTitleRef.current.value.trim().length
+                    ? addTaskBtnRef?.current?.click()
+                    : null
+                }
               />
             </ModalBody>
             <ModalFooter className="p-0 mx-0 mb-6 mr-6">

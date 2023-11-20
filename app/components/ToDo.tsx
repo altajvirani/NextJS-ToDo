@@ -27,6 +27,7 @@ import {
 import AddIcon from "@/app/assets/AddIcon.jsx";
 import TaskModal from "./TaskModal";
 import TaskCard from "./TaskCard";
+import Swipeable from "./Swipeable";
 
 const useHandleResize = () => {
   const [isWidthSmaller, setIsWidthSmaller] = useState<boolean>();
@@ -68,6 +69,13 @@ export default function ToDo() {
       setTabs(storedData ? storedData.tabs : initialTabs);
       setTasks(storedData ? storedData.tasks : initialTasks);
     }
+
+    const handleArrowKeys = (e: KeyboardEvent) =>
+      e.key === "ArrowLeft" || e.key === "ArrowRight"
+        ? setActiveTab((prevActiveTab) => !prevActiveTab)
+        : null;
+    window.addEventListener("keydown", handleArrowKeys);
+    return () => window.removeEventListener("keydown", handleArrowKeys);
   }, []);
 
   useEffect(() => {
@@ -188,93 +196,99 @@ export default function ToDo() {
   }, [isOpen, modalBtnRef]);
 
   return (
-    <Card
-      className={`${isWidthSmaller ? "w-full" : "w-[32rem]"}
-        " h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.15)]"
-      `}
-      style={{
-        boxShadow: "0rem 0rem 3rem -0.4rem rgba(0,0,0,0.15)",
-      }}
-      shadow="none">
-      <Tabs
-        onSelectionChange={(e) => toggleTaskVisibility(e)}
-        aria-label="Options"
-        color="primary"
-        variant="underlined"
-        classNames={{
-          tabList:
-            "px-4 py-0 gap-4 w-full relative rounded-none border-b border-divider",
-          cursor: "w-full bg-indigo-700 h-[0.1rem]",
-          tab: "max-w-fit px-0 h-12",
-          tabContent: "group-data-[selected=true]:text-slate-900",
-        }}>
-        {tabs.map((tab, key) => (
-          <Tab
-            key={key}
-            title={
-              <div className="flex items-center space-x-2">
-                <span className="font-bold">{tab.name}</span>
-                <Chip
-                  size="sm"
-                  variant="flat"
-                  radius="none"
-                  className=" text-slate-500 pb-[0.15rem] rounded-md">
-                  {tab.count}
-                </Chip>
-              </div>
-            }
-          />
-        ))}
-      </Tabs>
-      <CardBody className="p-0 pb-6">
-        <ScrollShadow className="w-full h-full p-6 pt-2">
-          <DndContext
-            id={dndId}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={tasks}
-              strategy={verticalListSortingStrategy}>
-              {tasks.map((task: Task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  activeTab={activeTab}
-                  updateTaskStatus={updateTaskStatus}
-                  onOpen={onOpen}
-                  setIsEdit={setIsEdit}
-                  setToBeEditedTask={setToBeEditedTask}
-                  deleteTask={deleteTask}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-        </ScrollShadow>
-      </CardBody>
-      <Button
-        isIconOnly
-        className="absolute bottom-5 right-5 p-0 m-0 max-w-[1rem]"
-        color="primary"
-        variant="shadow"
-        size="lg"
-        ref={modalBtnRef}
-        onPress={onOpen}
-        onClick={() => setIsEdit(false)}>
-        <AddIcon />
-      </Button>
-      <TaskModal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        taskTitleRef={taskTitleRef}
-        taskDescRef={taskDescRef}
-        addTask={addTask}
-        addTaskBtnRef={addTaskBtnRef}
-        isEdit={isEdit}
-        setIsEdit={setIsEdit}
-        toBeEditedTask={toBeEditedTask}
-        setToBeEditedTask={setToBeEditedTask}
-        editTask={editTask}
-      />
-    </Card>
+    <Swipeable
+      swipeDirection={activeTab ? "right" : "left"}
+      onSwipe={() => setActiveTab(!activeTab)}
+      className={`${isWidthSmaller ? "w-full" : "w-[32rem]"} h-full`}>
+      <Card
+        className={`${
+          isWidthSmaller ? "w-full" : "w-[32rem]"
+        } h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.15)]`}
+        style={{
+          boxShadow: "0rem 0rem 3rem -0.4rem rgba(0,0,0,0.15)",
+        }}
+        shadow="none">
+        <Tabs
+          selectedKey={activeTab ? "1" : "0"}
+          onSelectionChange={toggleTaskVisibility}
+          aria-label="Options"
+          color="primary"
+          variant="underlined"
+          classNames={{
+            tabList:
+              "px-4 py-0 gap-4 w-full relative rounded-none border-b border-divider",
+            cursor: "w-full bg-indigo-700 h-[0.1rem]",
+            tab: "max-w-fit px-0 h-12",
+            tabContent: "group-data-[selected=true]:text-slate-900",
+          }}>
+          {tabs.map((tab, key) => (
+            <Tab
+              key={key}
+              title={
+                <div className="flex items-center space-x-2">
+                  <span className="font-bold">{tab.name}</span>
+                  <Chip
+                    size="sm"
+                    variant="flat"
+                    radius="none"
+                    className=" text-slate-500 pb-[0.15rem] rounded-md">
+                    {tab.count}
+                  </Chip>
+                </div>
+              }
+            />
+          ))}
+        </Tabs>
+        <CardBody className="p-0 pb-6">
+          <ScrollShadow className="w-full h-full p-6 pt-2">
+            <DndContext
+              id={dndId}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={tasks}
+                strategy={verticalListSortingStrategy}>
+                {tasks.map((task: Task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    activeTab={activeTab}
+                    updateTaskStatus={updateTaskStatus}
+                    onOpen={onOpen}
+                    setIsEdit={setIsEdit}
+                    setToBeEditedTask={setToBeEditedTask}
+                    deleteTask={deleteTask}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </ScrollShadow>
+        </CardBody>
+        <Button
+          isIconOnly
+          className="absolute bottom-5 right-5 p-0 m-0 max-w-[1rem]"
+          color="primary"
+          variant="shadow"
+          size="lg"
+          ref={modalBtnRef}
+          onPress={onOpen}
+          onClick={() => setIsEdit(false)}>
+          <AddIcon />
+        </Button>
+        <TaskModal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          taskTitleRef={taskTitleRef}
+          taskDescRef={taskDescRef}
+          addTask={addTask}
+          addTaskBtnRef={addTaskBtnRef}
+          isEdit={isEdit}
+          setIsEdit={setIsEdit}
+          toBeEditedTask={toBeEditedTask}
+          setToBeEditedTask={setToBeEditedTask}
+          editTask={editTask}
+        />
+      </Card>
+    </Swipeable>
   );
 }

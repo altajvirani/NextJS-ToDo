@@ -1,6 +1,3 @@
 primary tasks:
 
-toggle task checkbox when swiped on mobile device
-switch to "remaining" tab when a new task is added
-switch tabs when pressed arrow keys in desktop and when swiped on mobile device
 find logo *
