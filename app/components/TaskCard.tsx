@@ -36,7 +36,7 @@ export default function TaskCard({
   const [touchStart, setTouchStart] = useState<Coords | null>(null);
   const [touchEnd, setTouchEnd] = useState<Coords | null>(null);
   const minXSwipeDistance = 50;
-  const maxYSwipeDistance = 35;
+  const maxYSwipeDistance = 50;
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart({
