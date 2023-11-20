@@ -64,10 +64,9 @@ export default function ToDo() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-      const storedTabs = localStorage.getItem("tabs");
-      const storedTasks = localStorage.getItem("tasks");
-      setTabs(storedTabs ? JSON.parse(storedTabs) : initialTabs);
-      setTasks(storedTasks ? JSON.parse(storedTasks) : initialTasks);
+      const storedData = JSON.parse(localStorage.getItem("todoListData")!);
+      setTabs(storedData ? storedData.tabs : initialTabs);
+      setTasks(storedData ? storedData.tasks : initialTasks);
     }
   }, []);
 
@@ -76,10 +75,11 @@ export default function ToDo() {
       initialRender.current = false;
       return;
     }
-    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-      localStorage.setItem("tabs", JSON.stringify(tabs));
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
+    if (typeof window !== "undefined" && typeof localStorage !== "undefined")
+      localStorage.setItem(
+        "todoListData",
+        JSON.stringify({ tabs: tabs, tasks: tasks })
+      );
   }, [tabs, tasks]);
 
   const taskTitleRef = useRef<HTMLInputElement>();

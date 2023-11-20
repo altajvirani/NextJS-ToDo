@@ -28,22 +28,40 @@ export default function TaskCard({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: task.id });
 
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const minSwipeDistance = 50;
+  interface Coords {
+    x: number;
+    y: number;
+  }
+
+  const [touchStart, setTouchStart] = useState<Coords | null>(null);
+  const [touchEnd, setTouchEnd] = useState<Coords | null>(null);
+  const minXSwipeDistance = 50;
+  const maxYSwipeDistance = 35;
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    } as Coords);
   };
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    } as Coords);
   };
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe || isRightSwipe) updateTaskStatus(!task.status, task.id);
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    const restrictSwipe =
+      distanceY < -maxYSwipeDistance || distanceY > maxYSwipeDistance;
+
+    const isLeftSwipe = distanceX > minXSwipeDistance;
+    const isRightSwipe = distanceX < -minXSwipeDistance;
+
+    if ((isLeftSwipe || isRightSwipe) && !restrictSwipe)
+      updateTaskStatus(!task.status, task.id);
   };
 
   return (
