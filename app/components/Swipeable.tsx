@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 interface SwipeableProps {
   swipeDirection: string;
@@ -12,7 +12,7 @@ interface SwipeableProps {
   children: React.ReactNode;
 }
 
-const Swipeable: React.FunctionComponent<SwipeableProps> = ({
+const Swipeable: React.FC<SwipeableProps> = ({
   swipeDirection,
   onSwipe,
   onSwipeArgs = null,
@@ -59,40 +59,17 @@ const Swipeable: React.FunctionComponent<SwipeableProps> = ({
       distanceY < -minYDistance && distanceX > -maxXDistance;
     const isRightSwipe = distanceX < -minXDistance && distanceY > -maxYDistance;
 
-    const mapSwipesToAction = [
-      {
-        name: "top",
-        isSwiped: isTopSwipe,
-      },
-      {
-        name: "left",
-        isSwiped: isLeftSwipe,
-      },
-      {
-        name: "bottom",
-        isSwiped: isBottomSwipe,
-      },
-      {
-        name: "right",
-        isSwiped: isRightSwipe,
-      },
-      {
-        name: "x",
-        isSwiped: isLeftSwipe || isRightSwipe,
-      },
-      {
-        name: "y",
-        isSwiped: isTopSwipe || isBottomSwipe,
-      },
-    ];
-
-    mapSwipesToAction.forEach((direction) =>
-      swipeDirection === direction.name && direction.isSwiped
-        ? onSwipeArgs
-          ? onSwipe(...onSwipeArgs)
-          : onSwipe()
-        : null
-    );
+    if (
+      (swipeDirection === "top" && isTopSwipe) ||
+      (swipeDirection === "left" && isLeftSwipe) ||
+      (swipeDirection === "bottom" && isBottomSwipe) ||
+      (swipeDirection === "right" && isRightSwipe) ||
+      (swipeDirection === "x" && (isLeftSwipe || isRightSwipe)) ||
+      (swipeDirection === "y" && (isTopSwipe || isBottomSwipe))
+    ) {
+      if (onSwipeArgs) onSwipe(...onSwipeArgs);
+      else onSwipe();
+    }
   };
 
   return (

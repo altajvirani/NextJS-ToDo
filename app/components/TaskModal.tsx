@@ -89,11 +89,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 ref={taskDescRef}
                 maxLength={150}
                 defaultValue={isEdit ? toBeEditedTask?.description : ""}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && taskTitleRef.current.value.trim().length
-                    ? addTaskBtnRef?.current?.click()
-                    : null
-                }
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Enter" &&
+                    taskTitleRef.current.value.trim().length
+                  )
+                    addTaskBtnRef?.current?.click();
+                }}
               />
             </ModalBody>
             <ModalFooter className="p-0 mx-0 mb-6 mr-6">

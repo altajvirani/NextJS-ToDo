@@ -40,7 +40,7 @@ const useHandleResize = () => {
   return isWidthSmaller;
 };
 
-export default function ToDo() {
+const ToDo: React.FC = () => {
   const initialRender = useRef(true);
   const isWidthSmaller = useHandleResize();
 
@@ -49,9 +49,14 @@ export default function ToDo() {
     count: number;
   }
 
+  const TAB_NAMES = {
+    REMAINING: "Remaining",
+    DONE: "Done",
+  };
+
   const initialTabs: Tab[] = [
-    { name: "Remaining", count: 0 },
-    { name: "Done", count: 0 },
+    { name: TAB_NAMES.REMAINING, count: 0 },
+    { name: TAB_NAMES.DONE, count: 0 },
   ];
   const [tabs, setTabs] = useState<Tab[]>(initialTabs);
 
@@ -62,17 +67,36 @@ export default function ToDo() {
   const initialTasks: Task[] = [];
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
+  const LOCAL_STORAGE_KEY = "todoListData";
+  const getStoredData = () => {
+    try {
+      return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
+    } catch (error) {
+      console.error("Error parsing localStorage data:", error);
+      return null;
+    }
+  };
+
+  const saveData = (tabs: Tab[], tasks: Task[]) =>
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ tabs, tasks }));
+
   useEffect(() => {
     if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-      const storedData = JSON.parse(localStorage.getItem("todoListData")!);
-      setTabs(storedData ? storedData.tabs : initialTabs);
-      setTasks(storedData ? storedData.tasks : initialTasks);
+      try {
+        const storedData = getStoredData();
+        if (storedData) {
+          setTabs(storedData.tabs);
+          setTasks(storedData.tasks);
+        }
+      } catch (error) {
+        console.error("Error parsing localStorage data: ", error);
+      }
     }
 
-    const handleArrowKeys = (e: KeyboardEvent) =>
-      e.key === "ArrowLeft" || e.key === "ArrowRight"
-        ? setActiveTab((prevActiveTab) => !prevActiveTab)
-        : null;
+    const handleArrowKeys = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight")
+        setActiveTab((prevActiveTab) => !prevActiveTab);
+    };
     window.addEventListener("keydown", handleArrowKeys);
     return () => window.removeEventListener("keydown", handleArrowKeys);
   }, []);
@@ -83,10 +107,7 @@ export default function ToDo() {
       return;
     }
     if (typeof window !== "undefined" && typeof localStorage !== "undefined")
-      localStorage.setItem(
-        "todoListData",
-        JSON.stringify({ tabs: tabs, tasks: tasks })
-      );
+      saveData(tabs, tasks);
   }, [tabs, tasks]);
 
   const taskTitleRef = useRef<HTMLInputElement>();
@@ -106,7 +127,9 @@ export default function ToDo() {
 
     setTabs((tabs) =>
       tabs.map((tab) =>
-        tab.name == "Remaining" ? { ...tab, count: tab.count + 1 } : tab
+        tab.name === TAB_NAMES.REMAINING
+          ? { ...tab, count: tab.count + 1 }
+          : tab
       )
     );
   };
@@ -114,7 +137,7 @@ export default function ToDo() {
   const editTask = (beingEditedTask: Task) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task.id == beingEditedTask.id
+        task.id === beingEditedTask.id
           ? {
               ...task,
               title: taskTitleRef.current?.value ?? "",
@@ -131,37 +154,32 @@ export default function ToDo() {
     setTasks((tasks) => tasks.filter((task) => task.id !== taskId));
 
     setTabs((tabs) =>
-      taskStatus
-        ? tabs.map((tab) =>
-            tab.name == "Done"
-              ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
-              : tab
-          )
-        : tabs.map((tab) =>
-            tab.name == "Remaining"
-              ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
-              : tab
-          )
+      tabs.map((tab) => ({
+        ...tab,
+        count:
+          tab.name === (taskStatus ? TAB_NAMES.DONE : TAB_NAMES.REMAINING)
+            ? Math.max(tab.count - 1, 0)
+            : tab.count,
+      }))
     );
   };
 
   const updateTaskStatus = (isCheckedOrSwiped: boolean, taskId: number) => {
     setTasks((tasks) =>
       tasks.map((task) =>
-        task.id == taskId ? { ...task, status: isCheckedOrSwiped } : task
+        task.id === taskId ? { ...task, status: isCheckedOrSwiped } : task
       )
     );
 
     setTabs((tabs) =>
-      tabs.map((tab) =>
-        isCheckedOrSwiped
-          ? tab.name == "Remaining"
-            ? { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
-            : { ...tab, count: tab.count + 1 }
-          : tab.name == "Remaining"
-          ? { ...tab, count: tab.count + 1 }
-          : { ...tab, count: tab.count > 0 ? tab.count - 1 : 0 }
-      )
+      tabs.map((tab) => ({
+        ...tab,
+        count:
+          tab.name ===
+          (isCheckedOrSwiped ? TAB_NAMES.REMAINING : TAB_NAMES.DONE)
+            ? Math.max(tab.count - 1, 0)
+            : tab.count + 1,
+      }))
     );
   };
 
@@ -187,9 +205,9 @@ export default function ToDo() {
   const addTaskBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const handleEnter = (e: KeyboardEvent) =>
-      e.key === "Enter" && !isOpen ? modalBtnRef.current?.click() : null;
-
+    const handleEnter = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && !isOpen) modalBtnRef.current?.click();
+    };
     document.addEventListener("keydown", handleEnter);
     return () => document.removeEventListener("keydown", handleEnter);
   }, [isOpen, modalBtnRef]);
@@ -288,4 +306,6 @@ export default function ToDo() {
       </Card>
     </Swipeable>
   );
-}
+};
+
+export default ToDo;
