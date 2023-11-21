@@ -238,7 +238,7 @@ export default function ToDo() {
             />
           ))}
         </Tabs>
-        <CardBody className="w-full h-full px-6 pb-1 ">
+        <CardBody className="w-full h-full px-6 pb-1">
           <DndContext
             id={dndId}
             collisionDetection={closestCenter}
