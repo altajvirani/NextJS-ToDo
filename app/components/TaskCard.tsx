@@ -47,7 +47,7 @@ export default function TaskCard({
               : "none",
           touchAction: "none",
         }}
-        className="flex items-center min-h-max my-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.2)]"
+        className="flex items-center min-h-max border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.2)]"
         shadow="none">
         <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
           <div className="w-full overflow-hidden mr-3">
