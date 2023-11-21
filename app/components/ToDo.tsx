@@ -8,13 +8,13 @@ import React, {
   useState,
 } from "react";
 import {
-  Card,
-  CardBody,
+  // Card,
+  // CardBody,
   Tabs,
   Tab,
   Chip,
   Button,
-  ScrollShadow,
+  // ScrollShadow,
   useDisclosure,
 } from "@nextui-org/react";
 import { Task } from "@/app/types";
@@ -200,14 +200,18 @@ export default function ToDo() {
       swipeDirection={activeTab ? "right" : "left"}
       onSwipe={() => setActiveTab(!activeTab)}
       className={`${isWidthSmaller ? "w-full" : "w-[32rem]"} h-full`}>
-      <Card
+      {/* <Card
         className={`${
           isWidthSmaller ? "w-full" : "w-[32rem]"
         } h-full bg-slate-50 border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.15)]`}
         style={{
           boxShadow: "0rem 0rem 3rem -0.4rem rgba(0,0,0,0.15)",
         }}
-        shadow="none">
+        shadow="none"> */}
+      <div
+        className={`${
+          isWidthSmaller ? "w-full" : "w-[32rem]"
+        } h-full bg-slate-50 rounded-2xl border-1 border-slate-300 shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.15)] overflow-hidden relative`}>
         <Tabs
           selectedKey={activeTab ? "1" : "0"}
           onSelectionChange={toggleTaskVisibility}
@@ -215,6 +219,7 @@ export default function ToDo() {
           color="primary"
           variant="underlined"
           classNames={{
+            base: "w-full",
             tabList:
               "px-4 py-0 gap-4 w-full relative rounded-none border-b border-divider",
             cursor: "w-full bg-indigo-700 h-[0.1rem]",
@@ -231,7 +236,7 @@ export default function ToDo() {
                     size="sm"
                     variant="flat"
                     radius="none"
-                    className=" text-slate-500 pb-[0.15rem] rounded-md">
+                    className=" flex items-center justify-center pb-[0.15rem] text-slate-500 rounded-md">
                     {tab.count}
                   </Chip>
                 </div>
@@ -239,31 +244,33 @@ export default function ToDo() {
             />
           ))}
         </Tabs>
-        <CardBody className="p-0 pb-6">
-          <ScrollShadow className="w-full h-full p-6 pt-2">
-            <DndContext
-              id={dndId}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={tasks}
-                strategy={verticalListSortingStrategy}>
-                {tasks.map((task: Task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    activeTab={activeTab}
-                    updateTaskStatus={updateTaskStatus}
-                    onOpen={onOpen}
-                    setIsEdit={setIsEdit}
-                    setToBeEditedTask={setToBeEditedTask}
-                    deleteTask={deleteTask}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          </ScrollShadow>
-        </CardBody>
+        {/* <CardBody className="p-0 pb-6"> */}
+        {/* <ScrollShadow className="w-full h-full p-6 pt-2"> */}
+        <div className="w-full h-full px-6 pt-2 pb-[3.75rem] overflow-x-hidden overflow-y-auto">
+          <DndContext
+            id={dndId}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={tasks}
+              strategy={verticalListSortingStrategy}>
+              {tasks.map((task: Task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  activeTab={activeTab}
+                  updateTaskStatus={updateTaskStatus}
+                  onOpen={onOpen}
+                  setIsEdit={setIsEdit}
+                  setToBeEditedTask={setToBeEditedTask}
+                  deleteTask={deleteTask}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        </div>
+        {/* </ScrollShadow> */}
+        {/* </CardBody> */}
         <Button
           isIconOnly
           className="absolute bottom-5 right-5 p-0 m-0 max-w-[1rem]"
@@ -288,7 +295,8 @@ export default function ToDo() {
           setToBeEditedTask={setToBeEditedTask}
           editTask={editTask}
         />
-      </Card>
+        {/* </Card> */}
+      </div>
     </Swipeable>
   );
 }
