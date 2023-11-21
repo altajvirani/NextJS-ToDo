@@ -2,8 +2,8 @@ import { Button, Card, Checkbox } from "@nextui-org/react";
 import DeleteIcon from "../assets/DeleteIcon";
 import EditIcon from "../assets/EditIcon";
 import { useSortable } from "@dnd-kit/sortable";
-import Swipeable from "./Swipeable";
 import { CSS } from "@dnd-kit/utilities";
+import Swipeable from "./Swipeable";
 import { Task } from "../types";
 
 interface TaskCardProps {
@@ -46,8 +46,9 @@ export default function TaskCard({
               ? "block"
               : "none",
           touchAction: "none",
+          
         }}
-        className="flex items-center min-h-max border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.2)]"
+        className="flex items-center min-w-full min-h-max mb-4 border-1 border-slate-300 shadow-none transition-shadow hover:shadow-[0rem_0rem_3rem_-0.4rem_rgba(0,0,0,0.2)]"
         shadow="none">
         <div className="w-full flex flex-row items-center py-4 pl-4 pr-3">
           <div className="w-full overflow-hidden mr-3">
